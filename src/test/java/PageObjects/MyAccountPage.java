@@ -10,10 +10,12 @@ public class MyAccountPage {
     private final By profileLink = By.id("profileLink");
 
     public MyAccountPage(WebDriver driver) {
+
         this.driver = driver;
     }
 
     public void clickProfileLink() {
+
         driver.findElement(profileLink).click();
     }
 }

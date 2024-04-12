@@ -11,3 +11,8 @@ Feature: Adding Items to Cart
     When I increase the quantity of "Apple AirPods" to 2
     Then I should see 2 "Apple AirPods" in my cart
     And the total price should reflect the updated quantity
+
+  Scenario: Store product details in excel
+    Given I am on cart page
+    When I have items in the cart
+    Then I will store the details in the excel sheet

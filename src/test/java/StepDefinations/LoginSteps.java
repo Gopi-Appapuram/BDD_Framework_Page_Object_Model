@@ -1,6 +1,7 @@
 package StepDefinations;
 
 import PageObjects.LoginPage;
+import UtilityClasses.ExcelUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
 import UtilityClasses.WebDriverManager;
 import io.cucumber.java.Before;
@@ -17,14 +18,11 @@ import java.util.Scanner;
 import static org.testng.Assert.assertTrue;
 
 public class LoginSteps {
-    WebDriver driver;
-    WebDriverManager webDriverManager;
-
-
+    WebDriver driver = WebDriverManager.getChromeDriver();
 
     @Given("I am on the Amazon login page")
     public void i_am_on_the_Amazon_login_page() throws Exception {
-        driver = WebDriverManager.getChromeDriver();
+        //driver = WebDriverManager.getChromeDriver();
         driver.get("https://www.amazon.in/ap/signin?openid.pape.max_auth_age=900&openid." +
                 "return_to=https%3A%2F%2Fwww.amazon.in%2Fgp%2Fyourstore%2Fhome%3Fpath%3D%252Fgp" +
                 "%252Fyourstore%252Fhome%26useRedirectOnSuccess%3D1%26signIn%3D1%26action%3Dsign-out%" +
@@ -64,6 +62,12 @@ public class LoginSteps {
     public void i_should_be_logged_in_successfully() {
         LoginPage loginPage = new LoginPage(driver);
         String welcomeMessageText = loginPage.isWelcomeMessageDisplayed();
+        ExcelUtility excelUtility = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+        excelUtility.setSheet("LoginPageData");
+        String[] welcomeMessage = {
+                welcomeMessageText
+        };
+        excelUtility.writeData(1, welcomeMessage, "Green");
         assertTrue(welcomeMessageText.contains("Hello,"));
     }
 

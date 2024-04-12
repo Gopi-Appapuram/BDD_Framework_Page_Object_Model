@@ -1,11 +1,14 @@
 package PageObjects;
 
+import UtilityClasses.ExcelUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
 import io.cucumber.java.mk_latn.No;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.util.Date;
 
 public class ProductPage {
     private final WebDriver driver;
@@ -94,12 +97,17 @@ public class ProductPage {
         String ProductPrice = driver.findElement(productPrice).getText().replaceAll(",", "");
         String ProductDiscountPercentage = driver.findElement(productDiscountPercentage).getText();
         String ProductImageUrl = driver.findElement(productImageLink).getAttribute("src");
+        Date currentDate = new Date();
         String[] ProductDetails = {
+                String.valueOf(currentDate),
                 ProductName,
                 ProductPrice,
                 ProductDiscountPercentage,
                 ProductImageUrl
         };
+        ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+        excel.setSheet("ProductDetailsPageData");
+        excel.writeData(0, ProductDetails, "White");
         System.out.println("+--------------------------------------+");
         System.out.println("|          PRODUCT DETAILS             |");
         System.out.println("+--------------------------------------+");

@@ -27,7 +27,6 @@ public class ScreenshotUtility {
 	 */
 	public ScreenshotUtility(WebDriver driver) {
 		this.driver = driver;
-		PageFactory.initElements(driver, this);
 	}
 
 	/**

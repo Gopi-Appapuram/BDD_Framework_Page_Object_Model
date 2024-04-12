@@ -102,5 +102,22 @@ public class AddToCartSteps {
         cartPage.compareTotalPriceWithDisplayedAmount(calculatedTotalPrice);
 
     }
+    @Given("I am on cart page")
+    public void i_am_on_cart_page() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickCartIcon();
+        cartPage.switchToCartPage();
+
+    }
+    @When("I have items in the cart")
+    public void i_have_items_in_the_cart() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.areProductsAvailableInCart();
+    }
+    @Then("I will store the details in the excel sheet")
+    public void i_will_store_the_details_in_the_excel_sheet() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.storeCartItemsInExcel();
+    }
 }
 

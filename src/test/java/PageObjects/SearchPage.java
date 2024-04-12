@@ -1,5 +1,6 @@
 package PageObjects;
 
+import UtilityClasses.ExcelUtility;
 import UtilityClasses.ScrollUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
 import org.openqa.selenium.*;
@@ -83,11 +84,25 @@ public class SearchPage {
             scroll.scrollElementIntoView(product);
             highlight.highlightElement(product);
             String ProductName = product.getText();
+            ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+            excel.setSheet("SearchResultsData");
             if (ProductName.contains(productName)) {
-                System.out.println("Results are displayed for the search keyword: " + productName);
+                String consoleMessage = "Results are displayed for the search keyword: " + productName;
+                System.out.println(consoleMessage);
+                String[] productNamesExcel = {
+                        ProductName, // Column 0 in excel
+                        consoleMessage // Column 1 in excel
+                };
+                excel.writeData(0, productNamesExcel, "white");
             } else {
                 // If no match is found after checking all the search results, print a message
-                System.err.println("No results found for the search keyword: " + productName);
+                String consoleMessage = "No results found for the search keyword: " + productName;
+                String[] productNamesExcel = {
+                        ProductName, // Column 0 in excel
+                        consoleMessage // Column 1 in excel
+                };
+                excel.writeData(0, productNamesExcel, "white");
+                System.err.println(consoleMessage);
             }
         }
 
@@ -95,6 +110,10 @@ public class SearchPage {
 
     public void areAccuratePriceFiltersApplied(String maxPrice) {
         for (WebElement product : driver.findElements(searchResultsPrice)) {
+            ScrollUtility scroll = new ScrollUtility(driver);
+            scroll.scrollElementIntoView(product);
+            SeleniumHighlighterUtility highlight = new SeleniumHighlighterUtility(driver);
+            highlight.highlightElement(product);
             String ProductPrice = product.getText();
             // Removing commas from the string
             String cleanString = ProductPrice.replaceAll(",", "");

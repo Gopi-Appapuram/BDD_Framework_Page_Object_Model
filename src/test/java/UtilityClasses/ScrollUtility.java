@@ -23,7 +23,6 @@ public class ScrollUtility {
 	public ScrollUtility(WebDriver driver) {
 		this.driver = driver;
 		this.js = (JavascriptExecutor) driver;
-		PageFactory.initElements(driver, this);
 	}
 
 	/**

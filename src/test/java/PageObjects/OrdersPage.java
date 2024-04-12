@@ -21,8 +21,8 @@ public class OrdersPage {
         return driver.findElement(By.id("ordersContainer")).isDisplayed();
     }
 
-    public void clickOrderDetails(String orderNumber) {
-        driver.findElement(By.xpath("//a[contains(text(), '" + orderNumber + "')]")).click();
-    }
+//    public void clickOrderDetails(String orderNumber) {
+//        driver.findElement(By.xpath("//a[contains(text(), '" + orderNumber + "')]")).click();
+//    }
 }
 

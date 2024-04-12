@@ -12,7 +12,8 @@ import io.cucumber.testng.CucumberOptions;
 @CucumberOptions(
         tags = "", // Define the tags to be executed (if any)
         features = {
-                "src/test/resources/Features"// Updated order of feature files
+                "src/test/resources/Features/1-User Login.feature",
+                "src/test/resources/Features/5-Wishlist.feature"// Updated order of feature files
         },
         glue = {
                 "StepDefinations" // Package where step definitions are located

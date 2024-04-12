@@ -15,6 +15,7 @@ public class OrderDetailsPage {
     }
 
     public void clickCancelOrder() {
+
         driver.findElement(cancelOrderButton).click();
     }
 

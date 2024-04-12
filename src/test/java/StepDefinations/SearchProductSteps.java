@@ -3,25 +3,30 @@ package StepDefinations;
 import PageObjects.HomePage;
 import PageObjects.SearchPage;
 import UtilityClasses.WebDriverManager;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Step definitions for the Cucumber scenarios related to searching for products on Amazon.
  */
 public class SearchProductSteps {
-    WebDriver driver;
-
+    WebDriver driver = WebDriverManager.getChromeDriver();
+    HomePage homePage;
 
     @Before
     @Given("I opened chrome browser")
     public void i_Opened_Chrome_Browser() {
-        driver = WebDriverManager.getChromeDriver();
+        homePage = new HomePage(driver);
         driver.get("https://www.amazon.in/");
-
     }
 
     /**
@@ -99,6 +104,7 @@ public class SearchProductSteps {
         searchPage.areAccuratePriceFiltersApplied(maxPrice);
 
     }
+
 
 
 }

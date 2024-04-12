@@ -1,5 +1,6 @@
 package PageObjects;
 
+import UtilityClasses.ScrollUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -11,7 +12,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class HomePage {
-    private final WebDriver driver;
+    WebDriver driver;
 
     // Locators
     private final By searchBox = By.xpath("//input[@id='twotabsearchtextbox']");
@@ -21,6 +22,7 @@ public class HomePage {
     public HomePage(WebDriver driver) {
 
         this.driver = driver;
+
     }
 
     public void isHomePageDisplayed(){
@@ -30,15 +32,20 @@ public class HomePage {
 
     public void enterSearchTerm(String searchTerm) {
         SeleniumHighlighterUtility highlight = new SeleniumHighlighterUtility(driver);
+        ScrollUtility scroll = new ScrollUtility(driver);
+
+        scroll.scrollElementIntoView(driver.findElement(searchBox));
         highlight.highlightElement(driver.findElement(searchBox));
         driver.findElement(searchBox).sendKeys(searchTerm);
     }
 
     public void clickSearchButton() {
         SeleniumHighlighterUtility highlight = new SeleniumHighlighterUtility(driver);
+        ScrollUtility scroll = new ScrollUtility(driver);
+
+        scroll.scrollElementIntoView(driver.findElement(searchButton));
         highlight.highlightElement(driver.findElement(searchButton));
         driver.findElement(searchButton).click();
     }
 
 }
-

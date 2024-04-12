@@ -22,7 +22,6 @@ public class WindowHandles {
 	 */
 	public WindowHandles(WebDriver driver) {
 		this.driver = driver;
-		PageFactory.initElements(driver, this);
 	}
 
 	/**
@@ -75,14 +74,6 @@ public class WindowHandles {
 		// iterate through open windows. If the title of the window matches the
 		// specified title,
 		// switch to it.
-//		for (String windowHandle : allWindowHandles) {
-//			
-//			driver.switchTo().window(windowHandle);
-//			if (driver.getTitle().equalsIgnoreCase(windowTitle)) {
-//				break;
-//			}
-//		}
-		
 		for (String windowHandle : allWindowHandles) {
 			driver.switchTo().window(windowHandle);
 			String title = driver.getTitle();
@@ -92,49 +83,4 @@ public class WindowHandles {
 		}
 		
 	}
-
-	// The following methods are commented out but can be used if needed:
-//
-//	 /**
-//	 * Switches to the next tab.
-//	 */
-//	 public void switchToNextTab() {
-//	 ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//	 driver.switchTo().window(tabs.get(1));
-//	 }
-//	
-//	 /**
-//	 * Closes the current tab and switches to the next tab.
-//	 */
-//	 public void closeAndSwitchToNextTab() {
-//	 driver.close();
-//	 ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//	 driver.switchTo().window(tabs.get(1));
-//	 }
-//	
-//	 /**
-//	 * Switches to the previous tab.
-//	 */
-//	 public void switchToPreviousTab() {
-//	 ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//	 driver.switchTo().window(tabs.get(0));
-//	 }
-//	
-//	 /**
-//	 * Closes the current tab and switches to the main window.
-//	 */
-//	 public void closeTabAndReturn() {
-//	 driver.close();
-//	 ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//	 driver.switchTo().window(tabs.get(0));
-//	 }
-//	
-//	 /**
-//	 * Switches to the previous tab and closes it.
-//	 */
-//	 public void switchToPreviousTabAndClose() {
-//	 ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//	 driver.switchTo().window(tabs.get(1));
-//	 driver.close();
-//	 }
 }
