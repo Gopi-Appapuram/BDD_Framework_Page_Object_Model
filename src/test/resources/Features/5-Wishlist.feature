@@ -11,6 +11,6 @@ Feature: Wishlist
         Given I am logged in as "Gopi"
         And I navigate to my wishlist
         When I have products in my wishlist
-        And I remove "Mr. Butler RoboChef" from the wishlist
+        And I remove "Pressure Cooker" from the wishlist
         Then I should see a success message
-        And "Mr. Butler RoboChef" should be removed from my wishlist
+        And "Pressure Cooker" should be removed from my wishlist

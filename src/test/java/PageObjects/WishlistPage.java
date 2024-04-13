@@ -142,7 +142,7 @@ public class WishlistPage {
 
     public void deleteSingleProduct(String productName){
         List<WebElement> ProductNames = driver.findElements(listOfItemNames);
-        for (int i=0; i<=ProductNames.size(); i++){
+        for (int i=0; i<ProductNames.size(); i++){
             SeleniumHighlighterUtility highlighter = new SeleniumHighlighterUtility(driver);
             highlighter.highlightElement(driver.findElements(listOfItemNames).get(i));
 
