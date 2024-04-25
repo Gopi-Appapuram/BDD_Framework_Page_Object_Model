@@ -29,7 +29,7 @@
     </properties>
 
     <dependencies>
-        <!-- Web Driver Manager Depandencies -->
+        <!-- Web Driver Manager Dependencies -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
