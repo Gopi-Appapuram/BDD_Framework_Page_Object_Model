@@ -105,7 +105,7 @@ public class ProductPage {
                 ProductDiscountPercentage,
                 ProductImageUrl
         };
-        ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+        ExcelUtility excel = new ExcelUtility("D:/ESoft_Solutions/AutomationPractice/Amazon/src/test/resources/TestData/AmazonData.xlsx");
         excel.setSheet("ProductDetailsPageData");
         excel.writeData(0, ProductDetails, "White");
         System.out.println("+--------------------------------------+");

@@ -29,9 +29,9 @@ public class SearchPage {
 
 
     public void areSearchResultsDisplayed() {
-        if(driver.findElement(searchResults).isDisplayed()){
+        if (driver.findElement(searchResults).isDisplayed()) {
             System.out.println("Product result list is displayed");
-        }else{
+        } else {
             System.err.println("Product result list is not displayed");
         }
     }
@@ -61,15 +61,18 @@ public class SearchPage {
             System.err.println("Element is disabled and all the filters sections are expanded by default");
         }
 
+        try{
+            scroll.scrollElementIntoView(driver.findElement(searchFilterByMinInput));
+            highlight.highlightElement(driver.findElement(searchFilterByMinInput));
+            driver.findElement(searchFilterByMinInput).sendKeys(MinPrice);
 
-        scroll.scrollElementIntoView(driver.findElement(searchFilterByMinInput));
-        highlight.highlightElement(driver.findElement(searchFilterByMinInput));
-        driver.findElement(searchFilterByMinInput).sendKeys(MinPrice);
-
-        scroll.scrollElementIntoView(driver.findElement(searchFilterByMaxInput));
-        highlight.highlightElement(driver.findElement(searchFilterByMaxInput));
-        driver.findElement(searchFilterByMaxInput).sendKeys(MaxPrice);
-        driver.findElement(searchFilterByMaxInput).sendKeys(Keys.ENTER);
+            scroll.scrollElementIntoView(driver.findElement(searchFilterByMaxInput));
+            highlight.highlightElement(driver.findElement(searchFilterByMaxInput));
+            driver.findElement(searchFilterByMaxInput).sendKeys(MaxPrice);
+            driver.findElement(searchFilterByMaxInput).sendKeys(Keys.ENTER);
+        } catch (NoSuchElementException e) {
+            System.out.println(e);;
+        }
 
 //        scroll.scrollElementIntoView(driver.findElement(applyPriceFilterButton));
 //        highlight.highlightElement(driver.findElement(applyPriceFilterButton));
@@ -84,7 +87,7 @@ public class SearchPage {
             scroll.scrollElementIntoView(product);
             highlight.highlightElement(product);
             String ProductName = product.getText();
-            ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+            ExcelUtility excel = new ExcelUtility("D:/ESoft_Solutions/AutomationPractice/Amazon/src/test/resources/TestData/AmazonData.xlsx");
             excel.setSheet("SearchResultsData");
             if (ProductName.contains(productName)) {
                 String consoleMessage = "Results are displayed for the search keyword: " + productName;
@@ -128,7 +131,7 @@ public class SearchPage {
         }
     }
 
-    public void clickAnyProductFromSearchResults(){
+    public void clickAnyProductFromSearchResults() {
         int listSize = driver.findElements(searchResultsPrice).size();
         Random random = new Random();
         WebElement anyOneProduct = driver.findElements(searchResultsPrice).get(random.nextInt(listSize));

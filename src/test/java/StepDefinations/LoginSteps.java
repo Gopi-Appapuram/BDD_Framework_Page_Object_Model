@@ -62,7 +62,7 @@ public class LoginSteps {
     public void i_should_be_logged_in_successfully() {
         LoginPage loginPage = new LoginPage(driver);
         String welcomeMessageText = loginPage.isWelcomeMessageDisplayed();
-        ExcelUtility excelUtility = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+        ExcelUtility excelUtility = new ExcelUtility("D:/ESoft_Solutions/AutomationPractice/Amazon/src/test/resources/TestData/AmazonData.xlsx");
         excelUtility.setSheet("LoginPageData");
         String[] welcomeMessage = {
                 welcomeMessageText

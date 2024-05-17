@@ -122,7 +122,7 @@ public class WishlistPage {
             scroll.scrollElementIntoView(products);
 
             String ProductName = products.getText();
-            ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+            ExcelUtility excel = new ExcelUtility("D:/ESoft_Solutions/AutomationPractice/Amazon/src/test/resources/TestData/AmazonData.xlsx");
             excel.setSheet("WishListData");
             int Total_Rows = excel.rowCount();
             for (int i=1; i<=Total_Rows; i++){

@@ -24,7 +24,7 @@ public class DeleteItemsFromCart {
     @When("I select to delete any one item")
     public void i_select_to_delete_any_one_item() {
         CartPage cartPage = new CartPage(driver);
-        ExcelUtility excel = new ExcelUtility("D:\\ESoft_Solutions\\AutomationPractice\\Amazon\\src\\test\\resources\\TestData\\AmazonData.xlsx");
+        ExcelUtility excel = new ExcelUtility("D:/ESoft_Solutions/AutomationPractice/Amazon/src/test/resources/TestData/AmazonData.xlsx");
         excel.setSheet("CartPageData");
         Random random = new Random();
         int row_number = random.nextInt(excel.rowCount());

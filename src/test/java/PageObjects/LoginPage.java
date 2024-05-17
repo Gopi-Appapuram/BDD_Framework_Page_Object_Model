@@ -13,7 +13,7 @@ public class LoginPage {
     private final By emailContinueButton = By.id("continue");
     private final By passwordInput = By.id("ap_password");
     private final By signInSubmitButton = By.id("signInSubmit");
-    By welcomeMessage = By.id("nav-link-accountList-nav-line-1");
+    private final By welcomeMessage = By.id("nav-link-accountList-nav-line-1");
     private final By errorMessage = By.id("auth-error-message-box");
 
     public LoginPage(WebDriver driver) {
@@ -27,7 +27,8 @@ public class LoginPage {
         driver.findElement(emailInput).sendKeys(email);
         Thread.sleep(5000);
     }
-    public void clickContinue(){
+
+    public void clickContinue() {
         SeleniumHighlighterUtility highlight = new SeleniumHighlighterUtility(driver);
         highlight.highlightElement(driver.findElement(emailContinueButton));
         driver.findElement(emailContinueButton).click();
@@ -64,12 +65,12 @@ public class LoginPage {
 
     public boolean isErrorMessageDisplayed() {
         SeleniumHighlighterUtility highlight = new SeleniumHighlighterUtility(driver);
-        if(driver.findElement(errorMessage).isDisplayed()){
+        if (driver.findElement(errorMessage).isDisplayed()) {
             highlight.highlightElement(driver.findElement(errorMessage));
             String ErrorMessage = driver.findElement(errorMessage).getText();
             System.out.println(ErrorMessage);
             return true;
-        } else{
+        } else {
             System.out.println("Message not found");
             return false;
         }
