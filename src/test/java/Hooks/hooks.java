@@ -27,9 +27,10 @@ public class hooks {
         byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
         scenario.attach(screenshot, "image/png", scenario.getName());
 
-        /*if (scenario.isFailed()) {
+        if (scenario.isFailed()) {
             screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot, "image/png", scenario.getName());
-        }*/
+            scenario.attach(screenshot, "image/png", scenario.getName().replace(" ", "")+"failed.png");
+        }
     }
+
 }

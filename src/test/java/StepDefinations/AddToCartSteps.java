@@ -12,10 +12,13 @@ import io.cucumber.java.en.Then;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 
@@ -118,5 +121,6 @@ public class AddToCartSteps {
         CartPage cartPage = new CartPage(driver);
         cartPage.storeCartItemsInExcel();
     }
+
 }
 
