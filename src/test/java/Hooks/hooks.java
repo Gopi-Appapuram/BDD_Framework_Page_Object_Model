@@ -33,4 +33,12 @@ public class hooks {
         }
     }
 
+    @AfterAll
+    public static void closeBrowser(){
+        if(driver != null){
+            driver.close();
+            driver.quit();
+        }
+    }
+
 }
