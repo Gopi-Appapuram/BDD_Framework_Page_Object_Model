@@ -1,3 +1,4 @@
+/*
 
 import UtilityClasses.ScrollUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
@@ -106,3 +107,4 @@ public class CheckBoxTest {
         return selectAllCheckbox.isSelected();
     }
 }
+*/

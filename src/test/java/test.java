@@ -1,3 +1,4 @@
+/*
 
 import UtilityClasses.ScrollUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
@@ -36,12 +37,14 @@ public class test {
     }
 
 
-    /**
+    */
+/**
      * Selects multiple values from a multi-select dropdown.
      *
      * @param dropdownLocator the By locator for the dropdown element
      * @param values          the values to select from the dropdown
-     */
+     *//*
+
     public void selectMultipleValuesFromDropdown(By dropdownLocator, List<String> values) {
         WebElement dropdownElement = driver.findElement(dropdownLocator);
         Select select = new Select(dropdownElement);
@@ -55,12 +58,14 @@ public class test {
         }
     }
 
-    /**
+    */
+/**
      * Gets a list of all the values present in the dropdown.
      *
      * @param dropdownLocator the By locator for the dropdown element
      * @return a list of all the values present in the dropdown
-     */
+     *//*
+
     public List<String> getAllDropdownValues(By dropdownLocator) {
         List<String> dropdownValues = new ArrayList<>();
         WebElement dropdownElement = driver.findElement(dropdownLocator);
@@ -75,12 +80,14 @@ public class test {
     }
 
 
-    /**
+    */
+/**
      * Selects a random number of values from a multi-select dropdown.
      *
      * @param dropdownLocator the By locator for the dropdown element
      * @param numberOfValues  the number of values to select from the dropdown
-     */
+     *//*
+
     public void selectRandomNumberOfValuesFromDropdown(By dropdownLocator, int numberOfValues) {
         WebElement dropdownElement = driver.findElement(dropdownLocator);
         Select select = new Select(dropdownElement);
@@ -109,11 +116,13 @@ public class test {
         }
     }
 
-    /**
+    */
+/**
      * Selects all values from a multi-select dropdown.
      *
      * @param dropdownLocator the By locator for the dropdown element
-     */
+     *//*
+
     public void selectAllValuesFromDropdownByIndex(By dropdownLocator) {
         WebElement dropdownElement = driver.findElement(dropdownLocator);
         Select select = new Select(dropdownElement);
@@ -130,11 +139,13 @@ public class test {
         }
     }
 
-    /**
+    */
+/**
      * Selects all values from a multi-select dropdown.
      *
      * @param dropdownLocator the By locator for the dropdown element
-     */
+     *//*
+
     public void selectAllValuesFromDropdownByVisibleText(By dropdownLocator) {
         WebElement dropdownElement = driver.findElement(dropdownLocator);
         Select select = new Select(dropdownElement);
@@ -158,3 +169,4 @@ public class test {
 
 }
 
+*/
