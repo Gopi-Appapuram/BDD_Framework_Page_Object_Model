@@ -25,10 +25,10 @@ import static UtilityClasses.WebDriverManager.driver;
         tags = "", // Define the tags to be executed (if any)
         features = {
                 "src/test/resources/Features/1-User Login.feature",
-                /*"src/test/resources/Features/2-Searching for Products.feature",
+                "src/test/resources/Features/2-Searching for Products.feature",
                 "src/test/resources/Features/3-Adding Items to Cart.feature",
                 "src/test/resources/Features/4-Delete Items In Cart.feature",
-                "src/test/resources/Features/5-Wishlist.feature"// Updated order of feature files*/
+                "src/test/resources/Features/5-Wishlist.feature"// Updated order of feature files
         },
         glue = {
                 "StepDefinations", "Hooks" // Package where step definitions are located
