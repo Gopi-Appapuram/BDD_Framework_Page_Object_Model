@@ -30,14 +30,14 @@ public class hooks {
 
 
 
-    @AfterAll(order = 1)
+    @AfterAll
     public static void zipFolder() {
         String sourcePath = "target/Reports";
-        String destinationPath = "target";
+        String destinationPath = "reports";
         ZipUtil.pack(new File(sourcePath), new File(destinationPath + ".zip"));
     }
 
-    @AfterAll(order = 2)
+    @AfterAll
     public static void closeBrowser() {
         if (driver != null) {
             driver.close();
