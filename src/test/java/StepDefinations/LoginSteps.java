@@ -4,6 +4,8 @@ import PageObjects.LoginPage;
 import UtilityClasses.ExcelUtility;
 import UtilityClasses.SeleniumHighlighterUtility;
 import UtilityClasses.WebDriverManager;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -28,12 +30,15 @@ public class LoginSteps {
                 "%252Fyourstore%252Fhome%26useRedirectOnSuccess%3D1%26signIn%3D1%26action%3Dsign-out%" +
                 "26ref_%3Dnav_AccountFlyout_signout&openid.assoc_handle=inflex&openid.mode=checkid_setup&openid." +
                 "ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0");
+        ExtentCucumberAdapter.addTestStepLog("Initialized Driver");
+
     }
 
     @When("I enter my email address {string} on the login page")
     public void i_enter_my_email_address(String email) throws Exception {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.enterEmail(email);
+        ExtentCucumberAdapter.getCurrentStep().generateLog(Status.PASS, "Entered Email Sucesssfully");
     }
 
     @When("I click on the Continue button on the login page")

@@ -6,6 +6,8 @@ import PageObjects.ProductPage;
 import PageObjects.SearchPage;
 import UtilityClasses.WebDriverManager;
 import UtilityClasses.WindowHandles;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;

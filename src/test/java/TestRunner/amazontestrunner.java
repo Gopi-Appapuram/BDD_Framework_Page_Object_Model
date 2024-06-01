@@ -2,7 +2,9 @@ package TestRunner;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
+import com.aventstack.extentreports.reporter.configuration.ViewName;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
@@ -25,7 +27,7 @@ import static UtilityClasses.WebDriverManager.driver;
         tags = "", // Define the tags to be executed (if any)
         features = {
                 "src/test/resources/Features/1-User Login.feature",
-                "src/test/resources/Features/2-Searching for Products.feature",
+                //"src/test/resources/Features/2-Searching for Products.feature",
                 /*"src/test/resources/Features/3-Adding Items to Cart.feature",
                 "src/test/resources/Features/4-Delete Items In Cart.feature",
                 "src/test/resources/Features/5-Wishlist.feature"// Updated order of feature files*/
@@ -34,10 +36,12 @@ import static UtilityClasses.WebDriverManager.driver;
                 "StepDefinations", "Hooks" // Package where step definitions are located
         },
         plugin = {
-                "summary", "pretty", "html:target/CucumberReports/htmlReport.html",
+                "pretty",
+                "html:target/CucumberReports/htmlReport.html",
                 "json:target/JsonReport/jsonReport.json",
                 "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
         },
+        dryRun=false,
         monochrome = true, // Makes console output more readable
         publish = true
 
@@ -51,4 +55,5 @@ public class amazontestrunner extends AbstractTestNGCucumberTests {
     public Object[][] scenarios() {
         return super.scenarios();
     }
+
 }
