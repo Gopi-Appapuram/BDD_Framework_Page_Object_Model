@@ -29,7 +29,6 @@ pipeline {
             script {
                 def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
                 def buildDisplayName = "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}"
-                def triggeredBy = BUILD_USER ?: 'Unknown'
                 def currentTime = new Date().format("yyyy-MM-dd HH:mm:ss")
 
                 emailext(
