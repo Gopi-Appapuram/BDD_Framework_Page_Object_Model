@@ -20,7 +20,7 @@ pipeline {
                 git 'https://github.com/Gopi-Appapuram/BDD_Framework_Page_Object_Model.git'
 
                 // To run Maven on a Windows agent, use
-                bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                bat "mvn clean test"
             }
         }
     }
