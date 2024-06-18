@@ -18,13 +18,13 @@ public class hooks {
 
 
     @AfterStep
-    public void takeScreenShot(Scenario scenario) {
-        if(!scenario.isFailed()){
+    public static void takeScreenShot(Scenario scenario) {
+        if (!scenario.isFailed()) {
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot, "image/png", scenario.getName().replace(" ", "") + "_passed.png");
-        } else if (scenario.isFailed()) {
+            scenario.attach(screenshot, "image/png", "Passed Scenario: " + scenario.getName().replace("\\s", ""));
+        } else {
             byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot, "image/png", scenario.getName().replace(" ", "") + "_failed.png");
+            scenario.attach(screenshot, "image/png", "Failed Scenario: " + scenario.getName().replace("\\s", ""));
         }
     }
 

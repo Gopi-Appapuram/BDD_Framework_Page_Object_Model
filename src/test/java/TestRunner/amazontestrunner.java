@@ -14,6 +14,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import static UtilityClasses.WebDriverManager.driver;
 
@@ -24,7 +25,7 @@ import static UtilityClasses.WebDriverManager.driver;
 // Configurations for Cucumber Test Runner
 
 @CucumberOptions(
-        tags = "", // Define the tags to be executed (if any)
+        tags = "@debug or @debug2 or @debug2", // Define the tags to be executed (if any)
         features = {
                 "src/test/resources/Features/1-User Login.feature",
                 //"src/test/resources/Features/2-Searching for Products.feature",
@@ -46,7 +47,6 @@ import static UtilityClasses.WebDriverManager.driver;
         publish = true
 
 )
-
 // Extends AbstractTestNGCucumberTests to run Cucumber tests with TestNG
 public class amazontestrunner extends AbstractTestNGCucumberTests {
 
