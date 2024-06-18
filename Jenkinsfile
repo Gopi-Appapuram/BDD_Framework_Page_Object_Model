@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         // Define environment variables for email configuration
-        EMAIL_RECIPIENTS = 'gopiappapuram022@example.com'
+        EMAIL_RECIPIENTS = 'gopiappapuram022@gmail.com, appapuramgopi6@gmail.com'
         // Define repository name
         REPOSITORY_NAME = 'BDD_Framework_Page_Object_Model'
     }
