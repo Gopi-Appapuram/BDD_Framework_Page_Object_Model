@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         // Define environment variables for email configuration
-        EMAIL_RECIPIENTS = 'team@example.com'
+        EMAIL_RECIPIENTS = 'gopiappapuram022@example.com'
         // Define repository name
         REPOSITORY_NAME = 'BDD_Framework_Page_Object_Model'
     }
@@ -20,7 +20,7 @@ pipeline {
                 git 'https://github.com/Gopi-Appapuram/BDD_Framework_Page_Object_Model.git'
 
                 // To run Maven on a Windows agent, use
-                bat "mvn clean test"
+                bat "mvn clean test -Dtest=amazontestrunner"
             }
         }
     }
