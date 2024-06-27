@@ -46,8 +46,10 @@ pipeline {
                 hangoutsNotify(
                     message: """
                     <b>Build Notification:</b><br/>
-                    ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} ${currentBuild.currentResult ?: 'UNKNOWN'}<br/>
-                    Check console output at <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>
+                    <b>JOB_NAME: </b>${env.JOB_NAME}<br/>
+                    <b>Build </b>#${env.BUILD_NUMBER}<br/>
+                    <b>${currentBuild.currentResult ?: 'UNKNOWN'}</b><br/>
+                    Check console output by click on <b>'OPEN BUILD'</b>
                     """,
                     token: 'ukoXu6ZhL9QicFMD69uhXArG_',
                     threadByJob: false
