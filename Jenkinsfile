@@ -30,6 +30,7 @@ pipeline {
                 def buildStatus = currentBuild.currentResult ?: 'UNKNOWN'
                 def buildDisplayName = "${env.JOB_NAME} - Build # ${env.BUILD_NUMBER} - ${buildStatus}"
                 def currentTime = new Date().format("yyyy-MM-dd HH:mm:ss")
+                def triggeredBy = env.BUILD_USER // Example: using BUILD_USER as an example of a Jenkins environment variable
 
                 emailext(
                     subject: "${buildDisplayName}",
