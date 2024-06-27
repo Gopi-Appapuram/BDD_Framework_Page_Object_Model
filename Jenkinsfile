@@ -45,3 +45,93 @@ pipeline {
         }
     }
 }
+
+
+
+pipeline {
+    agent any
+
+    environment {
+        GOOGLE_CHAT_WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                // Your build steps here
+                echo 'Building...'
+            }
+        }
+        stage('Test') {
+            steps {
+                // Your test steps here
+                echo 'Testing...'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                // Your deploy steps here
+                echo 'Deploying...'
+            }
+        }
+    }
+
+    post {
+        always {
+            steps {
+                script {
+                    def jsonPayload = """
+                    {
+                       "cardsV2":[
+                          {
+                             "cardId":"unique-card-id",
+                             "card":{
+                                "header":{
+                                   "title":"${env.JOB_NAME}",
+                                   "subtitle":"Build ${env.BUILD_ID}",
+                                   "imageUrl":"https://developers.google.com/chat/images/quickstart-app-avatar.png",
+                                   "imageType":"CIRCLE"
+                                },
+                                "sections":[
+                                   {
+                                      "header":"${currentBuild.currentResult}",
+                                      "collapsible":true,
+                                      "uncollapsibleWidgetsCount":1,
+                                      "widgets":[
+                                         {
+                                            "textParagraph":{
+                                               "text":"Click <a href=\\"${env.BUILD_URL}\\">here</a> for more info"
+                                            }
+                                         },
+                                         {
+                                            "divider":{}
+                                         },
+                                         {
+                                            "decoratedText":{
+                                               "icon":{
+                                                  "knownIcon":"PERSON"
+                                               },
+                                               "topLabel":"Last commit",
+                                               "text":"<i>${GIT_COMMIT}</i>",
+                                               "bottomLabel":"Author: ${GIT_AUTHOR_NAME}"
+                                            }
+                                         }
+                                      ]
+                                   }
+                                ]
+                             }
+                          }
+                       ]
+                    }
+                    """
+
+                    sh """
+                    curl -X POST -H 'Content-Type: application/json' \
+                    -d '${jsonPayload}' \
+                    ${GOOGLE_CHAT_WEBHOOK_URL}
+                    """
+                }
+            }
+        }
+    }
+}
