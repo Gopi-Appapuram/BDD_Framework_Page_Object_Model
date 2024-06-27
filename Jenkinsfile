@@ -44,10 +44,21 @@ pipeline {
                 )
 
                 hangoutsNotify(
-                    message: "This message is from a pipeline!",
+                    message: """
+                    <b>Build Notification:</b><br/>
+                    ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} ${currentBuild.currentResult ?: 'UNKNOWN'}<br/>
+                    Check console output at <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>
+                    """,
                     token: 'ukoXu6ZhL9QicFMD69uhXArG_',
                     threadByJob: false
                 )
+
+
+//                 hangoutsNotify(
+//                     message: "This message is from a pipeline!",
+//                     token: 'ukoXu6ZhL9QicFMD69uhXArG_',
+//                     threadByJob: false
+//                 )
             }
         }
     }
