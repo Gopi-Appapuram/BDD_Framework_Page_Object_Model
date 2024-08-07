@@ -5,18 +5,24 @@ import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.aventstack.extentreports.reporter.configuration.ViewName;
+import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.selenium.AxeBuilder;
 import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static UtilityClasses.WebDriverManager.driver;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * Runner class to run as Cucumber test runner file.
@@ -25,7 +31,7 @@ import static UtilityClasses.WebDriverManager.driver;
 // Configurations for Cucumber Test Runner
 
 @CucumberOptions(
-        tags = "@debug or @debug2 or @debug2", // Define the tags to be executed (if any)
+        tags = "@debug", // Define the tags to be executed (if any)
         features = {
                 "src/test/resources/Features/1-User Login.feature",
                 //"src/test/resources/Features/2-Searching for Products.feature",

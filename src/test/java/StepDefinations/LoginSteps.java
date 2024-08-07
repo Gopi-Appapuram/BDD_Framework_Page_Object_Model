@@ -1,26 +1,33 @@
 package StepDefinations;
 
+import Hooks.hooks;
 import PageObjects.LoginPage;
+import UtilityClasses.AccessibilityTest;
 import UtilityClasses.ExcelUtility;
-import UtilityClasses.SeleniumHighlighterUtility;
 import UtilityClasses.WebDriverManager;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
-import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
+import io.cucumber.java.StepDefinitionAnnotation;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
-import org.openqa.selenium.By;
+import io.cucumber.shaded.messages.types.StepDefinition;
 import org.openqa.selenium.WebDriver;
 
+import io.cucumber.java.Scenario;
 
-import java.time.Duration;
-import java.util.Scanner;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 
 import static org.testng.Assert.assertTrue;
 
 public class LoginSteps {
     WebDriver driver = WebDriverManager.getChromeDriver();
+    Scenario scenario;
 
     @Given("I am on the Amazon login page")
     public void i_am_on_the_Amazon_login_page() throws Exception {
@@ -87,5 +94,15 @@ public class LoginSteps {
     public void i_should_remain_on_the_login_page() {
         assertTrue(driver.getCurrentUrl().contains("https://www.amazon.in/ap/signin"));
         driver.quit();
+    }
+
+    @Then("I verify the Accessibility Violations")
+    public void iVerifyTheAccessibilityViolations() throws Exception {
+        AccessibilityTest accessibilityTest = new AccessibilityTest();
+        String uniqueIdentifier = hooks.getUniqueIdentifier();
+        System.out.println(uniqueIdentifier);
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+        accessibilityTest.allyAmazon(driver, uniqueIdentifier + "_"+ timeStamp + "_");
     }
 }
