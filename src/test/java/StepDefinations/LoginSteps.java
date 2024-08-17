@@ -8,21 +8,12 @@ import UtilityClasses.WebDriverManager;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 import io.cucumber.java.Scenario;
-import io.cucumber.java.StepDefinitionAnnotation;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
-import io.cucumber.shaded.messages.types.StepDefinition;
 import org.openqa.selenium.WebDriver;
-
-import io.cucumber.java.Scenario;
-
-
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Calendar;
-
 import static org.testng.Assert.assertTrue;
 
 public class LoginSteps {
@@ -97,12 +88,14 @@ public class LoginSteps {
     }
 
     @Then("I verify the Accessibility Violations")
+    //@Test
     public void iVerifyTheAccessibilityViolations() throws Exception {
-        AccessibilityTest accessibilityTest = new AccessibilityTest();
+        driver.get("https://www.amazon.in/ap/signin");
+        AccessibilityTest accessibilityTest = new AccessibilityTest("target/AccessibilityReports", "target/AccessibilityReports");
         String uniqueIdentifier = hooks.getUniqueIdentifier();
         System.out.println(uniqueIdentifier);
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 
-        accessibilityTest.allyAmazon(driver, uniqueIdentifier + "_"+ timeStamp + "_");
+        accessibilityTest.runAccessibilityTest(driver, uniqueIdentifier + "_"+ timeStamp + "_");
     }
 }
