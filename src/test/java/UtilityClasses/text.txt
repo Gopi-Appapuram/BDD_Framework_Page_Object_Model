@@ -1,0 +1,122 @@
+package PageObjects;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.asserts.SoftAssert;
+
+import java.util.List;
+
+public class PaginationPage {
+    private WebDriver driver;
+    private SoftAssert softAssert;
+
+    // By locators
+    private final By paginationControls = By.className("p-paginator");
+    private final By nextPageButton = By.xpath("//span[@class='p-paginator-icon pi pi-angle-right']/parent::button");
+    private final By prevPageButton = By.xpath("//span[@class='p-paginator-icon pi pi-angle-left']/parent::button");
+    private final By currentPageNum = By.xpath("//button[contains(@class, 'p-highlight')]");
+    private final String pageNumbers = "//button[contains(text(), '%s')]"; // Updated for dynamic page number
+    private final By resultCount = By.xpath("//span[contains(@class, 'paginator') and contains(text(), 'of')]");
+    private final By pageSizeDropdown = By.xpath("//span[contains(@class, 'p-dropdown-label')]");
+    private final By lastPageButton = By.xpath("//button[contains(@class, 'p-paginator-last')]");
+    private final By firstPageButton = By.xpath("//button[contains(@class, 'p-paginator-first')]");
+
+    public PaginationPage(WebDriver driver) {
+        this.driver = driver;
+        this.softAssert = new SoftAssert();
+    }
+
+    public void validatePaginationControls() {
+        int totalRecords = getTotalRecordCount();
+        boolean isPaginationVisible;
+
+        try {
+            isPaginationVisible = driver.findElement(paginationControls).isDisplayed();
+        } catch (NoSuchElementException e) {
+            isPaginationVisible = false;
+        }
+
+        if (totalRecords <= 10) {
+            softAssert.assertFalse(isPaginationVisible, "Pagination controls should not be displayed when records are less than or equal to 10.");
+            return;
+        }
+
+        softAssert.assertTrue(isPaginationVisible, "Pagination controls are not displayed.");
+        verifyCurrentPageHighlight(1);
+        int expectedTotalPages = verifyPageNumbers(7); // Assuming you know the expected total pages
+        verifyTotalCount(expectedTotalPages);
+        verifyButtonVisibility();
+        verifyButtonState(firstPageButton, true);
+        verifyButtonState(prevPageButton, true);
+
+        for (int currentPage = 1; currentPage <= expectedTotalPages; currentPage++) {
+            boolean isNextEnabled = currentPage < expectedTotalPages;
+            verifyButtonState(nextPageButton, isNextEnabled);
+            if (isNextEnabled) {
+                clickButton(nextPageButton);
+                verifyCurrentPageHighlight(currentPage + 1);
+            }
+        }
+
+        clickButton(firstPageButton);
+        verifyCurrentPageHighlight(1);
+        clickButton(lastPageButton);
+        verifyCurrentPageHighlight(expectedTotalPages);
+
+        softAssert.assertAll();
+    }
+
+    private int verifyPageNumbers(int expectedTotalPages) {
+        for (int i = 1; i <= expectedTotalPages; i++) {
+            String pageNum = String.valueOf(i);
+            try {
+                WebElement pageButton = driver.findElement(By.xpath(String.format(pageNumbers, pageNum)));
+                softAssert.assertEquals(pageButton.getText(), pageNum, "Page number mismatch for page " + pageNum);
+            } catch (NoSuchElementException e) {
+                softAssert.fail("Page button for page " + pageNum + " not found.");
+            }
+        }
+        return expectedTotalPages;
+    }
+
+    private int getTotalRecordCount() {
+        WebElement totalCountElement = driver.findElement(resultCount);
+        String[] parts = totalCountElement.getText().split(" ");
+        return Integer.parseInt(parts[parts.length - 1]);
+    }
+
+    private void verifyButtonState(By buttonLocator, boolean shouldBeDisabled) {
+        WebElement button = driver.findElement(buttonLocator);
+        boolean isDisabled = !button.isEnabled();
+        softAssert.assertEquals(isDisabled, shouldBeDisabled, buttonLocator + " state mismatch.");
+    }
+
+    private void verifyCurrentPageHighlight(int currentPage) {
+        WebElement highlightedElement = driver.findElement(currentPageNum);
+        softAssert.assertEquals(Integer.parseInt(highlightedElement.getText()), currentPage, "Current page highlight mismatch.");
+    }
+
+    private void verifyTotalCount(int expectedTotalPages) {
+        WebElement totalCountElement = driver.findElement(resultCount);
+        int expectedTotalCount = Integer.parseInt(totalCountElement.getText().split(" ")[2]);
+        softAssert.assertEquals(expectedTotalCount, expectedTotalPages * getCurrentPageSize(), "Total count mismatch.");
+    }
+
+    private int getCurrentPageSize() {
+        Select dropdown = new Select(driver.findElement(pageSizeDropdown));
+        return Integer.parseInt(dropdown.getFirstSelectedOption().getText());
+    }
+
+    private void verifyButtonVisibility() {
+        softAssert.assertTrue(driver.findElement(prevPageButton).isDisplayed(), "Previous button is not displayed.");
+        softAssert.assertTrue(driver.findElement(nextPageButton).isDisplayed(), "Next button is not displayed.");
+    }
+
+    private void clickButton(By buttonLocator) {
+        driver.findElement(buttonLocator).click();
+        // Add wait for UI changes if necessary
+    }
+}
