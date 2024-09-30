@@ -153,4 +153,67 @@ public class PaginationPage {
 
             softAssert.assertAll(); // Assert all at once
         }
+
+
+
+        //
+
+        public void validateKeyboardAccessibility() {
+            // 1. Verify that the default page should be selected on page load
+            verifyCurrentPageHighlight(1);
+
+            // 2. Start with the first pagination button and click it
+            WebElement firstButton = findElement(firstPageButton);
+            firstButton.click(); // Ensure it's focused
+            logger.info("Focused on the first page button.");
+
+            // 3. Navigate through pagination controls using TAB and verify each page
+            List<WebElement> pageButtons = findElements(pageNumberButtons);
+            for (WebElement pageButton : pageButtons) {
+                pageButton.sendKeys(Keys.TAB);
+                logger.info("Tab pressed, current focused element: " + driver.switchTo().activeElement().getText());
+
+                // Simulate pressing Enter on each page button
+                if (pageButton.isDisplayed()) {
+                    pageButton.sendKeys(Keys.ENTER);
+                    int currentPageAfterEnter = Integer.parseInt(getText(currentPageNum));
+                    softAssert.assertEquals(currentPageAfterEnter, Integer.parseInt(pageButton.getText()), "Page number mismatch after Enter.");
+                    logger.info("Navigated to page: " + currentPageAfterEnter);
+                }
+            }
+
+            // 4. Verify previous and next buttons visibility
+            verifyButtonVisibility();
+
+            // 5. Check functionality of the Next button
+            WebElement nextButton = findElement(nextPageButton);
+            nextButton.sendKeys(Keys.TAB); // Move focus to Next button
+            nextButton.sendKeys(Keys.ENTER); // Press Enter to activate it
+            int currentPageAfterNext = Integer.parseInt(getText(currentPageNum));
+            softAssert.assertTrue(currentPageAfterNext > 1, "Next button functionality failed.");
+            logger.info("Navigated to next page: " + currentPageAfterNext);
+
+            // 6. Check functionality of the Prev button
+            WebElement prevButton = findElement(prevPageButton);
+            prevButton.sendKeys(Keys.TAB); // Move focus to Prev button
+            prevButton.sendKeys(Keys.ENTER); // Press Enter to activate it
+            int currentPageAfterPrev = Integer.parseInt(getText(currentPageNum));
+            softAssert.assertTrue(currentPageAfterPrev < currentPageAfterNext, "Prev button functionality failed.");
+            logger.info("Navigated back to previous page: " + currentPageAfterPrev);
+
+            // 7. Check functionality of the First button
+            firstButton.sendKeys(Keys.TAB); // Move focus back to First button
+            firstButton.sendKeys(Keys.ENTER); // Press Enter to activate it
+            verifyCurrentPageHighlight(1); // Verify it goes back to page 1
+            logger.info("Navigated back to the first page.");
+
+            // 8. Check functionality of the Last button
+            WebElement lastButton = findElement(lastPageButton);
+            lastButton.sendKeys(Keys.TAB); // Move focus to Last button
+            lastButton.sendKeys(Keys.ENTER); // Press Enter to activate it
+            int currentPageAfterLast = Integer.parseInt(getText(currentPageNum));
+            softAssert.assertEquals(currentPageAfterLast, Integer.parseInt(pageButtons.get(pageButtons.size() - 1).getText()), "Last button functionality failed.");
+            logger.info("Navigated to the last page: " + currentPageAfterLast);
+        }
+
 }
