@@ -119,4 +119,38 @@ public class PaginationPage {
         driver.findElement(buttonLocator).click();
         // Add wait for UI changes if necessary
     }
+
+    public void validateKeyboardAccessibility() {
+            // Focus on the first pagination control
+            WebElement firstButton = findElement(firstPageButton);
+            firstButton.click(); // Click to ensure it's focused
+            softAssert.assertTrue(firstButton.isDisplayed(), "First button is not displayed.");
+
+            // Navigate through pagination controls using TAB
+            for (int i = 0; i < 5; i++) { // Adjust the count as needed
+                firstButton.sendKeys(Keys.TAB);
+                logger.info("Tab pressed, current focused element: " + driver.switchTo().activeElement().getText());
+            }
+
+            // Activate the currently focused button using ENTER
+            WebElement activeElement = driver.switchTo().activeElement();
+            activeElement.sendKeys(Keys.ENTER);
+            logger.info("Enter pressed on: " + activeElement.getText());
+
+            // Verify the page number after pressing Enter
+            int currentPageAfterEnter = Integer.parseInt(getText(currentPageNum));
+            softAssert.assertTrue(currentPageAfterEnter >= 1, "Current page after Enter is not valid.");
+
+            // Now check back navigation using the Prev button
+            WebElement prevButton = findElement(prevPageButton);
+            prevButton.sendKeys(Keys.TAB); // Move focus to Prev button
+            prevButton.sendKeys(Keys.ENTER); // Press Enter to activate it
+            verifyCurrentPageHighlight(currentPageAfterEnter - 1); // Verify that we go back one page
+            logger.info("Navigated back to previous page.");
+
+            // Repeat the navigation for Next and Last buttons if needed
+            // Add checks and logs similarly
+
+            softAssert.assertAll(); // Assert all at once
+        }
 }
