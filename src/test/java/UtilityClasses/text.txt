@@ -216,4 +216,68 @@ public class PaginationPage {
             logger.info("Navigated to the last page: " + currentPageAfterLast);
         }
 
+        ///
+
+        public void validateKeyboardAccessibility() {
+            // 1. Verify that the pagination controls are displayed at the bottom of the page
+            softAssert.assertTrue(isPaginationVisible(), "Pagination controls are not displayed.");
+
+            // 2. Default page should be selected on page load
+            verifyCurrentPageHighlight(1);
+
+            // 3. Get all page number buttons
+            List<WebElement> pageButtons = findElements(pageNumberButtons);
+            int totalPages = pageButtons.size();
+
+            // 4. Loop through all page numbers and validate keyboard accessibility
+            for (int i = 1; i <= totalPages; i++) {
+                // Focus on the page number button
+                WebElement pageButton = findElement(By.xpath(String.format(pageNumbers, String.valueOf(i))));
+                pageButton.sendKeys(Keys.TAB);
+                pageButton.sendKeys(Keys.ENTER);
+
+                // Verify current page highlight
+                verifyCurrentPageHighlight(i);
+
+                // Check the state of the buttons based on the current page
+                if (i == 1) {
+                    verifyButtonState(prevPageButton, false); // First page, Previous should be disabled
+                    verifyButtonState(nextPageButton, true);  // Next should be enabled
+                } else if (i == totalPages) {
+                    verifyButtonState(prevPageButton, true);   // Previous should be enabled
+                    verifyButtonState(nextPageButton, false);  // Last page, Next should be disabled
+                } else {
+                    verifyButtonState(prevPageButton, true);   // Previous should be enabled
+                    verifyButtonState(nextPageButton, true);   // Next should be enabled
+                }
+            }
+
+            // 5. Additional checks for First and Last buttons
+            WebElement firstButton = findElement(firstPageButton);
+            firstButton.sendKeys(Keys.TAB);
+            firstButton.sendKeys(Keys.ENTER);
+            verifyCurrentPageHighlight(1);
+            verifyButtonState(prevPageButton, false);
+            verifyButtonState(nextPageButton, true);
+
+            WebElement lastButton = findElement(lastPageButton);
+            lastButton.sendKeys(Keys.TAB);
+            lastButton.sendKeys(Keys.ENTER);
+            verifyCurrentPageHighlight(totalPages);
+            verifyButtonState(prevPageButton, true);
+            verifyButtonState(nextPageButton, false);
+
+            // 6. Press "Enter" key while focusing on a middle page if more than 5 pages exist
+            if (totalPages > 5) {
+                WebElement middlePageButton = findElement(By.xpath(String.format(pageNumbers, "5")));
+                middlePageButton.sendKeys(Keys.TAB);
+                middlePageButton.sendKeys(Keys.ENTER);
+                verifyCurrentPageHighlight(5);
+                verifyButtonState(prevPageButton, true);
+                verifyButtonState(nextPageButton, true);
+            }
+
+            softAssert.assertAll(); // Assert all at once
+        }
+
 }
