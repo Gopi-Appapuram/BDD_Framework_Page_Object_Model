@@ -1,0 +1,579 @@
+Load Testing — k6 vs Artillery
+Written for team discussion
+
+
+----------------------------------------------------------------
+Quick Background
+----------------------------------------------------------------
+
+We already have our UI tests written in Playwright TypeScript.
+They work great for checking if things work correctly.
+
+But our lead asked — what happens when 500 or 1000 people
+use the app at the same time?
+
+That is a different problem. Our Playwright tests only run
+one user at a time. So we looked at two tools that can help
+us with this — k6 and Artillery.
+
+Here is what we found.
+
+
+----------------------------------------------------------------
+The Real Problem First
+----------------------------------------------------------------
+
+Before we talk about tools, there is something important
+to understand.
+
+Each Playwright test opens a real Chrome browser.
+A real Chrome browser needs around 150MB of memory.
+
+So if we want 1000 users:
+1000 x 150MB = 150GB of memory needed.
+
+No laptop or server has that.
+
+So we cannot just run our Playwright tests 1000 times
+at the same time. We need a smarter way to do this.
+
+Both k6 and Artillery solve this in different ways.
+Let me explain both.
+
+
+================================================================
+Option 1 — k6
+================================================================
+
+What is k6?
+
+k6 is a load testing tool made by Grafana.
+Big companies like Netflix and GitHub use it.
+It is free and open source.
+
+The way k6 works is different from Playwright.
+Instead of opening real browsers for every user,
+it can simulate thousands of users very efficiently.
+
+But here is the thing — it has its own way of writing tests.
+It does not understand our Playwright code directly.
+So we need to rewrite our tests in k6 format.
+
+
+Let me show you with our login test.
+
+This is what we have right now in Playwright:
+
+    test('login', async ({ page }) => {
+      await page.goto('/login');
+      await page.fill('#email',    'user@test.com');
+      await page.fill('#password', 'Test@123');
+      await page.click('#submit');
+      await expect(page).toHaveURL('/dashboard');
+    });
+
+
+And this is the same thing written in k6:
+
+    import { browser } from 'k6/browser';
+    import { check }   from 'k6';
+
+    export const options = {
+      scenarios: {
+        login_test: {
+          executor: 'ramping-vus',
+          stages: [
+            { duration: '2m', target: 100  },
+            { duration: '5m', target: 1000 },
+            { duration: '2m', target: 0    },
+          ],
+          options: { browser: { type: 'chromium' } }
+        }
+      }
+    };
+
+    export default async function () {
+      const page = await browser.newPage();
+      try {
+        await page.goto('https://our-app.com/login');
+        await page.fill('#email',    'user@test.com');
+        await page.fill('#password', 'Test@123');
+        await page.click('#submit');
+        check(page, {
+          'login worked': (p) => p.url().includes('/dashboard')
+        });
+      } finally {
+        await page.close();
+      }
+    }
+
+
+If you look at both carefully you will notice:
+
+Things that are exactly the same:
+  page.goto()       — same
+  page.fill()       — same
+  page.click()      — same
+  page.waitForURL() — same
+
+Things that are different:
+  test('name', fn)           — becomes export default function()
+  expect(page).toHaveURL()   — becomes check(page, {})
+  browser opens automatically — we have to open it manually
+  browser closes automatically — we have to close it manually
+
+So the actual steps inside the test are almost the same.
+Just the wrapper around it is different.
+
+
+What about our Page Objects?
+
+We have our LoginPage class, ProductPage class and so on.
+These also need to be rewritten for k6.
+
+Here is our current LoginPage:
+
+    import { Page, expect } from '@playwright/test';
+
+    export class LoginPage {
+      constructor(private page: Page) {}
+
+      async login(email: string, password: string) {
+        await this.page.fill('#email',    email);
+        await this.page.fill('#password', password);
+        await this.page.click('#submit');
+      }
+
+      async verifyDashboard() {
+        await expect(this.page).toHaveURL('/dashboard');
+      }
+    }
+
+
+And here is what it looks like in k6:
+
+    import { Page }  from 'k6/browser';
+    import { check } from 'k6';
+
+    export class LoginPage {
+      constructor(private page: Page) {}
+
+      async login(email: string, password: string) {
+        await this.page.fill('#email',    email);     // same
+        await this.page.fill('#password', password);  // same
+        await this.page.click('#submit');              // same
+      }
+
+      async verifyDashboard() {
+        check(this.page, {
+          'on dashboard': (p) => p.url().includes('/dashboard')
+        });
+        // expect() does not work here
+        // we use check() instead
+      }
+    }
+
+The fill and click parts are identical.
+Only the verify part is different.
+
+
+What about multiple flows?
+
+In real life not every user does the same thing.
+Some users just login. Some search. Some checkout.
+
+In k6 we can run all our flows at the same time
+and control how many users do each one.
+
+Here is how it looks:
+
+    // each flow is a separate file
+
+    // k6/flows/loginFlow.ts
+    export async function loginFlow() {
+      const page = await browser.newPage();
+      try {
+        await page.goto('https://our-app.com/login');
+        await page.fill('#email',    'user@test.com');
+        await page.fill('#password', 'Test@123');
+        await page.click('#submit');
+        check(page, {
+          'login worked': (p) => p.url().includes('/dashboard')
+        });
+      } finally {
+        await page.close();
+      }
+    }
+
+    // k6/flows/checkoutFlow.ts
+    export async function checkoutFlow() {
+      const page = await browser.newPage();
+      try {
+        await page.goto('https://our-app.com/login');
+        await page.fill('#email',    'user@test.com');
+        await page.fill('#password', 'Test@123');
+        await page.click('#submit');
+        await page.goto('https://our-app.com/products');
+        await page.click('.product:first-child');
+        await page.click('#add-to-cart');
+        await page.fill('#card',   '4111111111111111');
+        await page.click('#place-order');
+        check(page, {
+          'order placed': (p) => p.url().includes('/confirmation')
+        });
+      } finally {
+        await page.close();
+      }
+    }
+
+
+    // k6/load.test.ts — run all flows together
+    export const options = {
+      scenarios: {
+        login_users: {
+          executor: 'ramping-vus',
+          stages: [{ duration: '5m', target: 40 }],
+          options: { browser: { type: 'chromium' } },
+          exec: 'login'      // 40 users run login flow
+        },
+        checkout_users: {
+          executor: 'ramping-vus',
+          stages: [{ duration: '5m', target: 20 }],
+          options: { browser: { type: 'chromium' } },
+          exec: 'checkout'   // 20 users run checkout flow
+        },
+      }
+    };
+
+    export async function login()    { await loginFlow();    }
+    export async function checkout() { await checkoutFlow(); }
+
+
+To run it:
+
+    k6 run k6/load.test.ts
+
+
+What we see after the run:
+
+    login users     40 — all passed
+    checkout users  20 — all passed
+
+    page load time  avg 2.1s   p95 2.8s   PASS
+    first content   avg 1.2s   p95 1.7s   PASS
+    checks passed   98.5%                 PASS
+
+
+The bonus thing about k6 — Web Vitals
+
+When k6 runs it automatically gives us these numbers
+after every test:
+
+    How long until the page showed something?   1.2 seconds
+    How long until the page fully loaded?       2.1 seconds
+    Did the page jump around while loading?     0.02 (good)
+    How fast did the server respond?            180ms
+    How fast did buttons and clicks respond?    56ms
+
+These are called Web Vitals. Google uses these to measure
+if a website feels fast and smooth to real users.
+
+Our Playwright tests never gave us these numbers.
+k6 gives them automatically every time we run.
+
+This is actually very useful because we can catch things
+like the page loading slowly or buttons not responding
+fast enough — things users notice but tests might miss.
+
+
+To summarise k6:
+
+    What is good about it:
+    - Can handle 10,000 plus users
+    - Gives Web Vitals automatically
+    - Free to use
+    - Used by big companies
+
+    What is not so good:
+    - We have to rewrite all our tests
+    - Our Page Objects need rewriting too
+    - Takes around 2 to 3 days to set up
+    - expect() and toHaveURL() do not work
+      we have to use check() instead
+
+
+================================================================
+Option 2 — Artillery
+================================================================
+
+What is Artillery?
+
+Artillery is another load testing tool.
+The big difference from k6 is that Artillery
+runs on Node.js — the same environment as Playwright.
+
+Because of this, Artillery can actually use
+our existing Playwright code directly.
+Our Page Objects, our helper functions,
+our expect() calls — all of it works as is.
+
+We only need to add 2 small files on top.
+That is it.
+
+
+Let me show you the same login example.
+
+Our existing LoginPage.ts — nothing changes:
+
+    import { Page, expect } from '@playwright/test';
+
+    export class LoginPage {
+      constructor(private page: Page) {}
+
+      async login(email: string, password: string) {
+        await this.page.fill('#email',    email);
+        await this.page.fill('#password', password);
+        await this.page.click('#submit');
+      }
+
+      async verifyDashboard() {
+        await expect(this.page).toHaveURL('/dashboard');
+      }
+    }
+
+
+Our existing spec.ts — nothing changes:
+
+    test('login flow', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+      await loginPage.verifyDashboard();
+    });
+
+
+We just add one new flow file:
+
+    // artillery/flow.ts
+    // we import our existing class and just wrap it
+
+    import { Page }      from '@playwright/test';
+    import { LoginPage } from '../playwright/pages/LoginPage';
+
+    export async function loginFlow(page: Page): Promise<void> {
+      const loginPage = new LoginPage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+      await loginPage.verifyDashboard();
+    }
+
+That is literally it. We just called our existing code
+inside a function. Nothing new to learn here.
+
+
+And one config file for the load settings:
+
+    // artillery/config.ts
+
+    export default {
+      config: {
+        target: 'https://our-app.com',
+        engines: { playwright: {} },
+        phases: [
+          { duration: '1m', arrivalRate: 10  },
+          { duration: '3m', arrivalRate: 50  },
+          { duration: '2m', arrivalRate: 100 },
+          { duration: '1m', arrivalRate: 0   },
+        ],
+      },
+      scenarios: [{
+        engine:       'playwright',
+        flowFunction: 'loginFlow',
+      }]
+    };
+
+This config just says:
+start with 10 users,
+slowly go up to 100 users,
+then stop.
+
+
+To run it:
+
+    artillery run artillery/config.ts
+
+
+What about multiple flows?
+
+Same idea as k6 but simpler because we can
+use all our existing Page Objects directly.
+
+    // artillery/flows/all.flows.ts
+    // we import all our existing classes
+
+    import { Page }          from '@playwright/test';
+    import { LoginPage }     from '../playwright/pages/LoginPage';
+    import { ProductPage }   from '../playwright/pages/ProductPage';
+    import { CheckoutPage }  from '../playwright/pages/CheckoutPage';
+    import { ProfilePage }   from '../playwright/pages/ProfilePage';
+
+
+    export async function loginFlow(page: Page): Promise<void> {
+      const loginPage = new LoginPage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+    }
+
+
+    export async function searchFlow(page: Page): Promise<void> {
+      const loginPage   = new LoginPage(page);
+      const productPage = new ProductPage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+      await productPage.search('iPhone');
+      await productPage.selectProduct('iPhone 15');
+    }
+
+
+    export async function checkoutFlow(page: Page): Promise<void> {
+      const loginPage    = new LoginPage(page);
+      const productPage  = new ProductPage(page);
+      const checkoutPage = new CheckoutPage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+      await productPage.search('iPhone');
+      await productPage.addToCart();
+      await checkoutPage.fillPayment();
+      await checkoutPage.placeOrder();
+    }
+
+
+    export async function profileFlow(page: Page): Promise<void> {
+      const loginPage   = new LoginPage(page);
+      const profilePage = new ProfilePage(page);
+      await loginPage.login('user@test.com', 'Test@123');
+      await profilePage.updateName('John Updated');
+    }
+
+
+Then in the config we say what percentage of users
+runs each flow:
+
+    scenarios: [
+      {
+        name:         'Login Flow',
+        weight:       40,       // 40 out of every 100 users
+        engine:       'playwright',
+        flowFunction: 'loginFlow',
+      },
+      {
+        name:         'Search Flow',
+        weight:       30,       // 30 out of every 100 users
+        engine:       'playwright',
+        flowFunction: 'searchFlow',
+      },
+      {
+        name:         'Checkout Flow',
+        weight:       20,       // 20 out of every 100 users
+        engine:       'playwright',
+        flowFunction: 'checkoutFlow',
+      },
+      {
+        name:         'Profile Flow',
+        weight:       10,       // 10 out of every 100 users
+        engine:       'playwright',
+        flowFunction: 'profileFlow',
+      },
+    ],
+
+
+What we see after the run:
+
+    Login Flow     40 percent of users   passed
+    Search Flow    30 percent of users   passed
+    Checkout Flow  20 percent of users   passed
+    Profile Flow   10 percent of users   passed
+
+    total scenarios completed   850
+    errors                      3
+    p95 response time           1.4 seconds
+
+
+To summarise Artillery:
+
+    What is good about it:
+    - Our LoginPage.ts stays exactly as it is
+    - Our spec.ts stays exactly as it is
+    - All our Page Objects work without changes
+    - expect() still works
+    - toHaveURL() still works
+    - toBeVisible() still works
+    - Only 2 new files needed
+    - Takes 2 to 3 hours to set up
+    - Free to use
+
+    What is not so good:
+    - Max around 100 real browser users
+    - Does not give Web Vitals
+    - Not suitable for 1000 plus users
+
+
+================================================================
+Side by Side — k6 vs Artillery
+================================================================
+
+    Our LoginPage.ts       k6 needs rewrite     Artillery no changes
+    Our spec.ts            k6 cannot use         Artillery no changes
+    Our Page Objects       k6 needs rewrite     Artillery no changes
+    expect()               k6 does not work     Artillery works fine
+    toHaveURL()            k6 does not work     Artillery works fine
+    toBeVisible()          k6 does not work     Artillery works fine
+    Max users              k6 handles 10,000+   Artillery handles 100
+    Web Vitals             k6 yes               Artillery no
+    Setup time             k6 takes 2-3 days    Artillery takes hours
+    New files needed       k6 needs many        Artillery needs 2 only
+    Cost                   both are free        both are free
+
+
+================================================================
+What We Suggest
+================================================================
+
+If we want to get started quickly and
+not touch our existing test code at all
+then Artillery is the right choice.
+
+We just wrap our existing functions,
+add a config file and we are done.
+The whole setup takes maybe half a day.
+
+If we need to test with thousands of users
+or if we need to measure Web Vitals properly
+then k6 is worth the investment.
+
+It needs more time upfront to rewrite things
+but it gives us much better data and scales
+to as many users as we need.
+
+Honestly the best approach long term is both.
+Keep our Playwright tests for functional testing.
+Use Artillery for quick load checks.
+Use k6 when we need serious scale.
+
+They all do different things and they
+work well together.
+
+
+================================================================
+References
+================================================================
+
+k6 browser docs:
+https://grafana.com/docs/k6/latest/using-k6-browser/
+
+Artillery playwright plugin:
+https://www.artillery.io/docs/guides/plugins/plugin-playwright
+
+Web Vitals explained by Google:
+https://web.dev/articles/vitals
+
+Playwright parallel testing:
+https://playwright.dev/docs/test-parallel
+
+
+================================================================
